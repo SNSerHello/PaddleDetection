@@ -70,20 +70,23 @@ class KeyPointTopDownCOCOEval(object):
         num_images = inputs['image'].shape[0]
         self.results['all_preds'][self.idx:self.idx + num_images, :, 0:
                                   3] = kpts[:, :, 0:3]
-        self.results['all_boxes'][self.idx:self.idx + num_images, 0:2] = inputs[
-            'center'].numpy()[:, 0:2] if isinstance(
-                inputs['center'], paddle.Tensor) else inputs['center']
-        self.results['all_boxes'][self.idx:self.idx + num_images, 2:4] = inputs[
-            'scale'].numpy()[:, 0:2] if isinstance(
-                inputs['scale'], paddle.Tensor) else inputs['scale']
-        self.results['all_boxes'][self.idx:self.idx + num_images, 4] = np.prod(
-            inputs['scale'].numpy() * 200,
-            1) if isinstance(inputs['scale'], paddle.Tensor) else np.prod(
-                inputs['scale'] * 200, 1)
-        self.results['all_boxes'][
-            self.idx:self.idx + num_images,
-            5] = np.squeeze(inputs['score'].numpy()) if isinstance(
-                inputs['score'], paddle.Tensor) else np.squeeze(inputs['score'])
+        if 'center' in inputs:
+            self.results['all_boxes'][self.idx:self.idx + num_images, 0:2] = inputs[
+                'center'].numpy()[:, 0:2] if isinstance(
+                    inputs['center'], paddle.Tensor) else inputs['center']
+        if 'scale' in inputs:
+            self.results['all_boxes'][self.idx:self.idx + num_images, 2:4] = inputs[
+                'scale'].numpy()[:, 0:2] if isinstance(
+                    inputs['scale'], paddle.Tensor) else inputs['scale']
+            self.results['all_boxes'][self.idx:self.idx + num_images, 4] = np.prod(
+                inputs['scale'].numpy() * 200,
+                1) if isinstance(inputs['scale'], paddle.Tensor) else np.prod(
+                    inputs['scale'] * 200, 1)
+        if 'score' in inputs:
+            self.results['all_boxes'][
+                self.idx:self.idx + num_images,
+                5] = np.squeeze(inputs['score'].numpy()) if isinstance(
+                    inputs['score'], paddle.Tensor) else np.squeeze(inputs['score'])
         if isinstance(inputs['im_id'], paddle.Tensor):
             self.results['image_path'].extend(inputs['im_id'].numpy())
         else:
